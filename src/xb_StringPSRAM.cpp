@@ -169,7 +169,10 @@ unsigned char StringPSRAM::reserve(unsigned int size)
 unsigned char StringPSRAM::changeBuffer(unsigned int maxStrLen)
 {
     size_t newSize = ((maxStrLen + 16) & (~0xf)) - 1;
+	
 	char *newbuffer = (char *) heap_caps_realloc(buffer, newSize + 1, MALLOC_CAP_SPIRAM | MALLOC_CAP_32BIT); 
+	//char *newbuffer = (char *) realloc(buffer, newSize + 1); 
+	
     if(newbuffer) {
         if(newSize > len){
             if(newSize > capacity){
@@ -182,6 +185,7 @@ unsigned char StringPSRAM::changeBuffer(unsigned int maxStrLen)
         }
         capacity = newSize;
         buffer = newbuffer;
+	    asm("memw");
         return 1;
     }
     log_e("realloc failed! Buffer unchanged");
